@@ -22,21 +22,24 @@ export const DataProvider = ({ children }) => {
   const [last, setLast] = useState(null);
   const getData = useCallback(async () => {
     try {
-      const response = await api.loadData()
-      setData(response);
-      setLast(response.events[response.events.length-1]);
+      const response = await api.loadData();
+      // Trier les événements par date
+      const sortedEvents = response.events.sort((a, b) => new Date(a.date) - new Date(b.date));
+      const sortedResponse = { ...response, events: sortedEvents };
+      setData(sortedResponse);
+      setLast(sortedEvents[sortedEvents.length - 1]);
     } catch (err) {
       setError(err);
     }
   }, []);
-  useEffect(() => {
-    if (data) return;
-    getData();
-  });
   
+  useEffect(() => {
+    if (data) return; // Prévient le rechargement si les données sont déjà chargées
+    getData();
+  }, [data, getData]); // Ajout de getData dans les dépendances pour garantir la mise à jour
+
   return (
     <DataContext.Provider
-      // eslint-disable-next-line react/jsx-no-constructed-context-values
       value={{
         data,
         error,
@@ -55,3 +58,4 @@ DataProvider.propTypes = {
 export const useData = () => useContext(DataContext);
 
 export default DataContext;
+
