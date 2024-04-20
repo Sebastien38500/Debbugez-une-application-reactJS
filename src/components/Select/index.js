@@ -61,6 +61,7 @@ const Select = ({
           data-testid="collapse-button-testid"
           className={collapsed ? "open" : "close"}
           onClick={() => setCollapsed(!collapsed)}
+          aria-label="Toggle Collapse" 
         >
           <Arrow />
         </button>
